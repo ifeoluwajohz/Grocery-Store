@@ -1,0 +1,16 @@
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:IfeAndShade419@localhost:4190/Post?schema=public"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

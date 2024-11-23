@@ -1,0 +1,35 @@
+
+.parkinsans {
+  font-family: "Parkinsans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  padding: 0 8rem;
+  font-family: 'parkinsans';
+}
+
+/* tablet screen */
+@media (max-width: 1008px) {
+  body {
+    padding: 0 0.75rem;
+  }
+}
+
+
+/* Mobile screen */
+@media (max-width: 780px) {
+  body {
+    padding: 0 0.75rem;
+  }
+}
+
+
