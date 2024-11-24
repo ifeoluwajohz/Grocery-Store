@@ -7,10 +7,52 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
+
+// User Model
+model User {
   id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  name      String
+  firebaseId String  @unique
+
+  // orders    Order[]
+  cart      CartItem[]
+  wishlist  WishlistItem[]
+  likes     Like[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model WishlistItem {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Decimal
+  description String?
+  image     String?
+
+  cartItems  CartItem[]
+  wishlistItems WishlistItem[]
+  likes      Like[]
 }
