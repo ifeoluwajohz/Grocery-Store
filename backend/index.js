@@ -9,9 +9,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = express();
 
-prisma.user.findMany().then(users => console.log(users));
-
-
+prisma.user.findMany().then(user => console.log(user));
 
 // Middleware to parse JSON
 app.use(express.json());

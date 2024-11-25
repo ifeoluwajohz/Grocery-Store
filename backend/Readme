@@ -1,0 +1,129 @@
+Grocery Cart Management API
+This project provides a backend API for managing a grocery cart application. It includes functionality for handling users, products, and cart-related operations such as adding, updating, retrieving, and deleting items from a user's cart. The application is built using Node.js, Express, and Prisma ORM with PostgreSQL as the database.
+
+Features
+User Management:
+
+Create users.
+Associate users with their carts, wishlist, and liked products.
+Product Management:
+
+Add products to the catalog.
+Associate products with cart items and wishlist items.
+Cart Management:
+
+Add items to the cart.
+Retrieve all items in a user's cart.
+Update the quantity of items in the cart.
+Delete items from the cart.
+Tech Stack
+Backend Framework: Node.js with Express.js
+ORM: Prisma
+Database: PostgreSQL
+Language: JavaScript (ES6+)
+Installation
+Clone the repository:
+
+bash
+Copy code
+git clone https://github.com/your-username/grocery-cart-api.git
+cd grocery-cart-api
+Install dependencies:
+
+bash
+Copy code
+npm install
+Configure environment variables: Create a .env file in the root directory and include the following:
+
+env
+Copy code
+DATABASE_URL=postgresql://<username>:<password>@<host>:<port>/<database>?schema=public
+Initialize the database:
+
+bash
+Copy code
+npx prisma migrate dev --name init
+Start the development server:
+
+bash
+Copy code
+npm run dev
+Endpoints
+User Routes
+Method	Endpoint	Description	Payload Example
+POST	/user/create	Create a new user	{ "name": "John Doe", "firebaseId": "abc123" }
+Product Routes
+Method	Endpoint	Description	Payload Example
+POST	/product/add	Add a new product	{ "name": "Milk", "price": 10.5, "description": "1L Milk", "image": "url.jpg" }
+Cart Routes
+Method	Endpoint	Description	Payload Example
+POST	/cart/add	Add an item to the cart	{ "userId": 1, "productId": 2, "quantity": 1 }
+POST	/cart/get	Get items in the cart	{ "userId": 1 }
+PUT	/cart/update	Update cart item quantity	{ "userId": 1, "productId": 2, "quantity": 3 }
+DELETE	/cart/delete	Remove an item from the cart	{ "userId": 1, "productId": 2 }
+Database Models
+User
+prisma
+Copy code
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  firebaseId String  @unique
+  cart      CartItem[]
+  wishlist  WishlistItem[]
+  likes     Like[]
+}
+Product
+prisma
+Copy code
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  price       Decimal
+  description String?
+  image       String?
+  cartItems   CartItem[]
+  wishlistItems WishlistItem[]
+  likes       Like[]
+}
+CartItem
+prisma
+Copy code
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+Running Tests
+You can run tests for the API using tools like Postman or Thunder Client.
+
+Project Structure
+bash
+Copy code
+grocery-cart-api/
+├── controllers/         # Contains route handler logic
+│   ├── cartController.js
+│   └── productController.js
+├── prisma/              # Prisma schema and migrations
+│   ├── schema.prisma
+│   └── migrations/
+├── routes/              # API route definitions
+│   ├── cartRoutes.js
+│   └── productRoutes.js
+├── node_modules/        # Dependencies
+├── .env                 # Environment variables
+├── package.json         # Project metadata and dependencies
+├── README.md            # Documentation
+└── server.js            # Entry point
+Contributing
+Fork the repository.
+Create a feature branch: git checkout -b feature-name.
+Commit your changes: git commit -m 'Add some feature'.
+Push to the branch: git push origin feature-name.
+Open a pull request.
+License
+This project is licensed under the MIT License.
+
