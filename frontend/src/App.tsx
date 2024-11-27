@@ -1,23 +1,21 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, NavLink, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import Navbar from "./components/Navbar"
+import Home from './components/Home'
+import SignInComponent from './utils/SignInComponent'
+import { useAuth } from './context/AuthContext'
 
-import Navbar from './components/Navbar'
-
-const App: React.FC = () => {
+const App = () => {
+  const {user} = useAuth();
   return (
     <>
-    <Router>
-      <Navbar />
-      <Routes>
-        
-      </Routes>
-
-    </Router>
-      <div>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis culpa quaerat neque consectetur quos veniam aperiam unde, ipsam quo obcaecati. Ut quod, earum magnam asperiores id est dolorum praesentium ex!</p>
-      </div>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path='/login' element={!user ? <SignInComponent /> : <Home/>} />
+        </Routes>
+      </Router>
     </>
-    
   )
 }
 
