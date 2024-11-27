@@ -1,43 +1,121 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Add a new product
-const addProduct = async (req, res, next) => {
-    const { name, price, description, image } = req.body;
+/**
+ * Search for products with filtering, sorting, and pagination.
+ */
+const searchProduct = async (req, res, next) => {
+    const { 
+        name, 
+        category, 
+        minPrice, 
+        maxPrice, 
+        page = 1, 
+        limit = 10, 
+        sortBy = 'name', 
+        order = 'asc' 
+    } = req.query;
 
     try {
-        // Validate that all required fields are provided
-        if (!name || !price) {
-            return res.status(400).json({ error: 'Name and Price are required fields' });
+        // Build the filters dynamically
+        const searchFilters = {};
+
+        if (name) {
+            searchFilters.name = {
+                contains: name,
+                mode: 'insensitive', // Case-insensitive search
+            };
         }
 
-        // Create a new product
+        if (category) {
+            searchFilters.category = category.toUpperCase(); // Ensure category matches enum
+        }
+
+        if (minPrice || maxPrice) {
+            searchFilters.price = {};
+            if (minPrice) searchFilters.price.gte = parseFloat(minPrice);
+            if (maxPrice) searchFilters.price.lte = parseFloat(maxPrice);
+        }
+
+        // Pagination calculations
+        const offset = (page - 1) * limit;
+
+        // Query the database
+        const products = await prisma.product.findMany({
+            where: searchFilters,
+            orderBy: { [sortBy]: order.toLowerCase() === 'desc' ? 'desc' : 'asc' },
+            skip: parseInt(offset),
+            take: parseInt(limit),
+        });
+
+        // Count total products matching the criteria
+        const totalProducts = await prisma.product.count({
+            where: searchFilters,
+        });
+
+        if (!products.length) {
+            return res.status(404).json({ message: 'No products found matching the criteria' });
+        }
+
+        res.status(200).json({
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total: totalProducts,
+            products,
+        });
+    } catch (error) {
+        next(error); // Pass error to middleware
+    }
+};
+
+/**
+ * Add a new product.
+ */
+const addProduct = async (req, res, next) => {
+    const { name, price, description, image, category } = req.body;
+
+    try {
+        // Validate required fields
+        if (!name || !price || !category) {
+            return res.status(400).json({ error: 'Name, Price, and Category are required fields' });
+        }
+
+        // Create new product
         const newProduct = await prisma.product.create({
             data: {
-                name: name,
-                price: price,
-                description: description || null, // Optional field
-                image: image || null, // Optional field
-            }
+                name,
+                price: parseFloat(price),
+                description: description || null,
+                image: image || null,
+                category: category.toUpperCase(),
+            },
         });
 
         res.status(201).json({
             message: 'Product added successfully',
-            product: newProduct
+            product: newProduct,
         });
     } catch (error) {
-        next(error);
+        console.log(error);
+        res.send(error)
     }
 };
 
-// Example: Controller for updating product
+/**
+ * Update an existing product.
+ */
 const updateProduct = async (req, res, next) => {
-    const { id, name, price, description, image } = req.body;
+    const { id, name, price, description, image, category } = req.body;
 
     try {
-        // Check if the product exists
+        // Validate required fields
+        if (!id) {
+            return res.status(400).json({ error: 'Product ID is required' });
+        }
+
+        // Find the product
         const product = await prisma.product.findUnique({
-            where: { id }
+            where: { id },
         });
 
         if (!product) {
@@ -48,30 +126,38 @@ const updateProduct = async (req, res, next) => {
         const updatedProduct = await prisma.product.update({
             where: { id },
             data: {
-                name: name || product.name, // Only update if the field is provided
-                price: price || product.price,
+                name: name || product.name,
+                price: price ? parseFloat(price) : product.price,
                 description: description || product.description,
-                image: image || product.image
-            }
+                image: image || product.image,
+                category: category ? category.toUpperCase() : product.category,
+            },
         });
 
         res.status(200).json({
             message: 'Product updated successfully',
-            product: updatedProduct
+            product: updatedProduct,
         });
     } catch (error) {
         next(error);
     }
 };
 
-// Example: Controller for deleting product
+/**
+ * Delete a product.
+ */
 const deleteProduct = async (req, res, next) => {
     const { id } = req.body;
 
     try {
-        // Find the product by ID
+        // Validate required fields
+        if (!id) {
+            return res.status(400).json({ error: 'Product ID is required' });
+        }
+
+        // Find the product
         const product = await prisma.product.findUnique({
-            where: { id }
+            where: { id },
         });
 
         if (!product) {
@@ -80,19 +166,53 @@ const deleteProduct = async (req, res, next) => {
 
         // Delete the product
         await prisma.product.delete({
-            where: { id }
+            where: { id },
         });
 
         res.status(200).json({
-            message: 'Product deleted successfully'
+            message: 'Product deleted successfully',
         });
     } catch (error) {
         next(error);
     }
 };
 
+/**
+ * Fetch all products with optional pagination.
+ */
+const getAllProducts = async (req, res, next) => {
+    const { page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = req.query;
+
+    try {
+        // Pagination calculations
+        const offset = (page - 1) * limit;
+
+        // Query the database
+        const products = await prisma.product.findMany({
+            orderBy: { [sortBy]: order.toLowerCase() === 'desc' ? 'desc' : 'asc' },
+            skip: parseInt(offset),
+            take: parseInt(limit),
+        });
+
+        // Count total products
+        const totalProducts = await prisma.product.count();
+
+        res.status(200).json({
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total: totalProducts,
+            products,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
+    searchProduct,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getAllProducts,
 };

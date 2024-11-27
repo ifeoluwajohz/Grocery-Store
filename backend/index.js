@@ -2,21 +2,31 @@ require('dotenv').config;
 // index.js
 const express = require('express');
 const authRoutes = require('./routes/authRoute'); // Correct path to your authRoute.js file
-const UserProduct = require('./routes/userProductRoute')
+const cartRoute = require('./routes/cartRoute')
 const productRoutes = require('./routes/productRoute');
 const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const cors = require('cors');
 const app = express();
 
-prisma.user.findMany().then(user => console.log(user));
+
+// Allow requests from your frontend
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // If using cookies/auth headers
+}));
+
+
+const prisma = new PrismaClient();
+
+// prisma.user.findMany().then(user => console.log(user.name));
 
 // Middleware to parse JSON
 app.use(express.json());
 
 // Use the auth routes
 app.use('/user', authRoutes); // Use the routes exported from authRoute.js
-app.use('/user', UserProduct)
+app.use('/user', cartRoute)
 app.use('/products', productRoutes);
 
 const PORT = process.env.PORT || 5000;

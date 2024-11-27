@@ -1,58 +1,78 @@
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:IfeAndShade419@localhost:4190/Post?schema=public"
+  url      = "postgresql://postgres:IfeAndShade419@localhost:4190/postgres?schema=public"
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+// Define ProductCategory Enum
+enum ProductCategory {
+  ELECTRONICS
+  GROCERIES
+  CLOTHING
+  BEAUTY
+  BOOKS
+  TOYS
+  SPORTS
+  JEWELRY
+  OFFICE_SUPPLIES
+  PET_SUPPLIES
+}
 
 // User Model
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  firebaseId String  @unique
+model User {   @unique
+  id             Int      @id @default(autoincrement())
+  firebaseId     String   @unique
+  name           String
+  email          String?  @unique
+  profilePicture String?
 
-  // orders    Order[]
-  cart      CartItem[]
-  wishlist  WishlistItem[]
-  likes     Like[]
-}
-
-model CartItem {
-  id        Int      @id @default(autoincrement())
-  quantity  Int
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-}
-
-model WishlistItem {
-  id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-}
-
-model Like {
-  id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-}
-
-model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Decimal
-  description String?
-  image     String?
-
-  cartItems  CartItem[]
-  wishlistItems WishlistItem[]
+  cart       CartItem[]
+  wishlist   WishlistItem[]
   likes      Like[]
+}
+
+// Cart Item Model
+model CartItem {
+  id         Int           @id @default(autoincrement())
+  quantity   Int
+  product    Product       @relation(fields: [productId], references: [id])
+  productId  Int
+  user       User          @relation(fields: [userId], references: [id])
+  userId     Int
+  createdAt  DateTime      @default(now()) // Automatically sets the current date/time
+  updatedAt  DateTime      @updatedAt      // Automatically updates on every change
+}
+
+// Wishlist Item Model
+model WishlistItem {
+  id         Int           @id @default(autoincrement())
+  product    Product       @relation(fields: [productId], references: [id])
+  productId  Int
+  user       User          @relation(fields: [userId], references: [id])
+  userId     Int
+}
+
+// Like Model
+model Like {
+  id         Int           @id @default(autoincrement())
+  product    Product       @relation(fields: [productId], references: [id])
+  productId  Int
+  user       User          @relation(fields: [userId], references: [id])
+  userId     Int
+}
+
+// Product Model
+model Product {
+  id            Int           @id @default(autoincrement())
+  name          String
+  price         Decimal
+  description   String?
+  image         String?
+  category      ProductCategory
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  likes         Like[]
 }

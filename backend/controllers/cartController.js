@@ -20,22 +20,21 @@ const getCartItem = async (req, res, next) => {
         });
 
         if (userCart.length === 0) {
-            return res.status(404).json({ error: 'No items in cart for this user' });
+            return res.status(204).json({ message: 'No items in cart for this user' });
         }
 
         res.status(200).json({ message: 'Cart items retrieved', cart: userCart });
     } catch (error) {
-        next(error);
+        res.status(400).json({error: error.message});
     }
 };
 
-
 // Add item to cart
-const addItemToCart = async (req, res, next) => {
-    const { userId, productId, quantity } = req.body;
+const addItemToCart = async (req, res) => {
+    const { userId, productId, quantity }   = req.body;
 
     try {
-        // Check if userId and productId are provided
+        
         if (!userId || !productId) {
             return res.status(400).json({ error: 'User ID and Product ID are required' });
         }
@@ -76,7 +75,7 @@ const addItemToCart = async (req, res, next) => {
 
         res.status(201).json({ message: 'Item added to cart', item: newItem });
     } catch (error) {
-        next(error);
+        res.status(400).json(error.message);
     }
 };
 
@@ -105,7 +104,7 @@ const updateCartItem = async (req, res, next) => {
 
         res.status(200).json({ message: 'Cart item updated', item: updatedItem });
     } catch (error) {
-        next(error);
+        res.status(400).json({error: error.message});
     }
 };
 
@@ -133,7 +132,7 @@ const deleteCartItem = async (req, res, next) => {
 
         res.status(200).json({ message: 'Cart item deleted' });
     } catch (error) {
-        next(error);
+        res.status(400).json({error: error.message});
     }
 };
 
