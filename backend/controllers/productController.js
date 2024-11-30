@@ -1,14 +1,13 @@
 const { PrismaClient } = require('@prisma/client');
+const joi = require('joi')
 const prisma = new PrismaClient();
 
-/**
- * Search for products with filtering, sorting, and pagination.
- */
 const searchProduct = async (req, res, next) => {
     const { 
         name, 
         category, 
         minPrice, 
+        description,
         maxPrice, 
         page = 1, 
         limit = 10, 
@@ -17,18 +16,18 @@ const searchProduct = async (req, res, next) => {
     } = req.query;
 
     try {
-        // Build the filters dynamically
         const searchFilters = {};
 
         if (name) {
-            searchFilters.name = {
-                contains: name,
-                mode: 'insensitive', // Case-insensitive search
-            };
+            searchFilters.name = { contains: name, mode: 'insensitive' };
+        }
+
+        if (description) {
+            searchFilters.description = { contains: description, mode: 'insensitive' };
         }
 
         if (category) {
-            searchFilters.category = category.toUpperCase(); // Ensure category matches enum
+            searchFilters.category = category.toUpperCase();
         }
 
         if (minPrice || maxPrice) {
@@ -37,10 +36,8 @@ const searchProduct = async (req, res, next) => {
             if (maxPrice) searchFilters.price.lte = parseFloat(maxPrice);
         }
 
-        // Pagination calculations
         const offset = (page - 1) * limit;
 
-        // Query the database
         const products = await prisma.product.findMany({
             where: searchFilters,
             orderBy: { [sortBy]: order.toLowerCase() === 'desc' ? 'desc' : 'asc' },
@@ -48,10 +45,7 @@ const searchProduct = async (req, res, next) => {
             take: parseInt(limit),
         });
 
-        // Count total products matching the criteria
-        const totalProducts = await prisma.product.count({
-            where: searchFilters,
-        });
+        const totalProducts = await prisma.product.count({ where: searchFilters });
 
         if (!products.length) {
             return res.status(404).json({ message: 'No products found matching the criteria' });
@@ -61,12 +55,16 @@ const searchProduct = async (req, res, next) => {
             page: parseInt(page),
             limit: parseInt(limit),
             total: totalProducts,
+            totalPages: Math.ceil(totalProducts / limit),
             products,
         });
     } catch (error) {
-        next(error); // Pass error to middleware
+        next(error);
+        res.status(400).json({message: error.message});
+
     }
 };
+
 
 /**
  * Add a new product.
@@ -208,11 +206,79 @@ const getAllProducts = async (req, res, next) => {
     }
 };
 
+const getSingleProduct = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        if (!id) {
+            return res.status(400).json({ error: 'Product ID is required' });
+        }
+
+        const productId = parseInt(id, 10);
+        if (isNaN(productId)) {
+            return res.status(400).json({ error: 'Product ID must be a valid number' });
+        }
+
+        const product = await prisma.product.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(400).json(error);
+    }
+};
+const getCategory = async (req, res) => {
+    const { category } = req.params;
+
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        category: category.toUpperCase(), // Ensure consistent case if necessary
+      },
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found for this category' });
+    }
+
+    res.json({ products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch products' });
+  }
+};
+
+const getAllCategory = async (req, res) => {
+
+  try {
+    const categories =  await prisma.product.findMany({
+        select :{
+            category: true
+        },
+        distinct: ["category"]
+    })
+
+    res.json({ categories });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 module.exports = {
     searchProduct,
+    getCategory,
+    getAllCategory,
     addProduct,
     updateProduct,
     deleteProduct,
     getAllProducts,
+    getSingleProduct,
 };

@@ -3,10 +3,14 @@ import { useParams, Link } from 'react-router-dom'
 
 
 interface ProductCategories {
+    id: number;
+    name: string;
     category: string;
+    price: number;
 }
 
-const Category: React.FC = () => {
+const ProductCategory: React.FC = () => {
+    const {category } = useParams();
     const [categories, setCategories] = useState<ProductCategories[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false)
@@ -16,33 +20,36 @@ const Category: React.FC = () => {
         const fetchProductsByCategory = async () => {
           setLoading(true);
           try {
-            const response = await fetch(`http://localhost:3600/products/categories/`);
+            const response = await fetch(`http://localhost:3600/products/category/${category}`);
             if (!response.ok) {
               throw new Error('Failed to fetch products');
             }
             const data = await response.json();
-            setCategories(data.categories);
-            // con(data.categories);
+            setCategories(data.products);
+            console.log(data.products);
 
           } catch (err) {
             setError(err.message);
+            console.log(err.message);
+
           } finally {
             setLoading(false);
           }
         };
     
         fetchProductsByCategory();
-      }, []);
+      }, [category]);
     
-      if (loading) return <p>Loading all categories ...</p>;
+      if (loading) return <p>Loading... {category} section</p>;
       if (error) return <p className="text-red-500">{error}</p>;
   return (
-    <div className="category-page w-80 text-left p-4 bg-gray-200">
-      <h1 className="text-xl font-bold">Products in Category Section</h1>
-      <div className="product-list text-left">
-        {categories.map((output, index) => (
-          <Link to={`/category/${output.category}`} key={index} className="category-item space-y-3 px-3 underline">
-            <h2>{output.category}</h2>
+    <div className="category-page text-center">
+      <h1 className="text-xl font-bold">Products in {category} Category</h1>
+      <div className="product-list flex py-4 justify-center text-center">
+        {categories.map((category) => (
+          <Link to={`/product/${category.id}`} key={category.id} className="category-item space-y-3 px-3 underline">
+            <h2>{category.name}</h2>
+            <p>${category.price}</p>
           </Link>
         ))}
       </div>
@@ -51,4 +58,4 @@ const Category: React.FC = () => {
   )
 }
 
-export default Category
+export default ProductCategory

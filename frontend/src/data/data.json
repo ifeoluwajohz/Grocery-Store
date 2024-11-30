@@ -1,0 +1,8 @@
+{
+    "features": [
+        {"img":"https://img.icons8.com/ios/50/van.png", "title":"Fastest Delivery", "info":"Deliver all your orders in good time."},
+        {"img":"https://img.icons8.com/?size=100&id=97544&format=png&color=000000", "title":"24x7 Services", "info":"We are always active for your services."},
+        {"img":"https://img.icons8.com/fluency/48/verified-account--v1.png", "title":"Verified Brands", "info":"Guarnteed products."},
+        {"img":"https://img.icons8.com/external-flaticons-flat-flat-icons/64/external-quality-assurance-cleaning-flaticons-flat-flat-icons-2.png", "title":"100% Assurance", "info":"Our 100% payment assurance"}
+    ]
+}
