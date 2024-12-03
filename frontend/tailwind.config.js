@@ -9,6 +9,12 @@ export default {
     "./src/components/ProductDetail.tsx",
     "./src/components/ProductCategory.tsx",
 
+    "./src/components/CartItems.tsx",
+
+
+    "./src/utils/SignInComponent.tsx",
+
+
 
     // "./src/App.tsx",
 

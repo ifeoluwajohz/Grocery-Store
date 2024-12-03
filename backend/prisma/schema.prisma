@@ -32,7 +32,7 @@ model User {   @unique
   cart       CartItem[]
   wishlist   WishlistItem[]
   likes      Like[]
-}
+} 
 
 // Cart Item Model
 model CartItem {

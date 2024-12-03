@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import Category from './Category';
 import SearchPattern from './SearchPattern';
+import CartItem from './CartItems'
 
 interface Product {
   id: number;
@@ -162,8 +163,8 @@ const Navbar: React.FC = () => {
           />
 
           {cart && (
-            <div className="fixed mt-2 top-8 right-2 lg:right-32 z-50 bg-slate-200 p-4 w-64 h-screen">
-              <h3 className="text-blue-700">Cart Component</h3>
+            <div className="fixed text-center mt-3 top-8 right-2 lg:right-32 z-50 bg-slate-200 p-4 w-64 h-screen">
+              <CartItem />
             </div>
           )}
 

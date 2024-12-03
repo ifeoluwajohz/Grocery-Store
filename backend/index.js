@@ -26,7 +26,7 @@ app.use(express.json());
 
 // Use the auth routes
 app.use('/user', authRoutes); // Use the routes exported from authRoute.js
-app.use('/user', cartRoute)
+app.use('/carts', cartRoute)
 app.use('/products', productRoutes);
 
 const PORT = process.env.PORT || 5000;

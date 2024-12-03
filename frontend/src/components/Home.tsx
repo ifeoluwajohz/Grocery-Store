@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
 import features from '../data/data.json'
+
 // import { CartProvider } from '../context/CartContext';
 
 interface addToCart {
@@ -30,6 +31,7 @@ const Home = () => {
   const [error, setError] = useState(null)
   const [products, setProducts] = useState<Produce[]>([])
   const featuring: Features[] = features.features;
+
 
   useEffect(() => {
     const fetchCategory = async () => {

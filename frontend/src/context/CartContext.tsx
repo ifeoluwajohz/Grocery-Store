@@ -1,131 +1,189 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { useAuth } from "./AuthContext"; // Adjust the path to your AuthContext file
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
-interface CartItem {
+
+interface Product {
   id: string;
   name: string;
+  price: string; // Consider using `number` for price
+  category: string;
+  image: string;
+}
+
+interface CartItem {
+  id: string; // Unique cart item identifier
+  productId: string; // Related to Product
   quantity: number;
-  price: number;
-  description : string;
+  product: Product; // Include full product details
 }
 
-interface CartContextProps {
-  cart: CartItem[] | null;
-  loading: boolean;
-  getCart: () => Promise<void>;
-  updateItem: (id: string, quantity: number) => Promise<void>;
-  deleteItem: (id: string) => Promise<void>;
+interface increase {
+  quantity: number;
+  productId: string; // Related to Product
+
+}
+
+
+interface CartContextType {
+  cart: CartItem[];
+  isLoading: boolean;
+  error: string | null;
+  fetchCart: () => Promise<void>;
+  addItem: (item: CartItem) => Promise<void>;
+  increaseItem: (id: string) => Promise<void>;
+  decreaseItem: (id: string) => Promise<void>;
+  removeItem: (id: string) => Promise<void>;
   clearCart: () => Promise<void>;
+  isAuthenticated: boolean;
+  setAuthStatus: (status: boolean) => void;
 }
 
-const CartContext = createContext<CartContextProps | undefined>(undefined);
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const useCart = (): CartContextProps => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
-};
+export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const token = localStorage.getItem("jwt");
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const { user, loading: authLoading } = useAuth();
-
-  const getCart = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
+  
+  const fetchCart = async () => {
+    const token = localStorage.getItem("jwt");
+    setIsLoading(true);
+    setError(null)
     try {
-      const idToken = await user.getIdToken();
-      const response = await fetch("http://localhost:3600/cart", {
-        method: "GET",
+      const response = await fetch("http://localhost:3600/carts/get_cartItems", {
+        method: 'GET',
         headers: {
-          Authorization: `Bearer ${idToken}`,
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error("Failed to fetch cart");
-      }
+      if (!response.ok) throw new Error('Failed to fetch cart');
       const data = await response.json();
-      setCart(data.cartItems);
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
 
-  const updateItem = async (id: string, quantity: number) => {
-    if (!user) return;
+
+      setCart(data.cart); // Expect product details nested under `product`
+    } catch (err) {
+      setError((err as Error).message);
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
+  const addItem = async (item: CartItem) => {
+
+    const token = localStorage.getItem("jwt");
     try {
-      const idToken = await user.getIdToken();
-      const response = await fetch(`http://localhost:3600/cart/${id}`, {
-        method: "PATCH",
+      const response = await fetch("http://localhost:3600/carts/cart_post", {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${idToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ quantity }),
+          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
+        body: JSON.stringify(item),
+        
       });
-      if (!response.ok) {
-        throw new Error("Failed to update cart item");
-      }
-      await getCart();
+      await fetchCart(); // Refresh cart
     } catch (error) {
-      console.error("Error updating cart item:", error);
+      console.log(error)
+      setError((error as Error).message);
     }
   };
 
-  const deleteItem = async (id: string) => {
-    if (!user) return;
+  const increaseItem = async (id: number) => {
+    const token = localStorage.getItem("jwt");
     try {
-      const idToken = await user.getIdToken();
-      const response = await fetch(`http://localhost:3600/cart/${id}`, {
-        method: "DELETE",
+      const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/increase`, {
+        method: 'PATCH',
         headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
+        
       });
-      if (!response.ok) {
-        throw new Error("Failed to delete cart item");
-      }
-      await getCart();
+      await fetchCart(); // Refresh cart
     } catch (error) {
-      console.error("Error deleting cart item:", error);
+      setError((error as Error).message);
+    }
+  };
+
+  const decreaseItem = async (id: number) => {
+    const token = localStorage.getItem("jwt");
+    try {
+      const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/decrease`, {
+        method: 'PATCH',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
+        
+      });
+      await fetchCart(); // Refresh cart
+    } catch (error) {
+      setError((error as Error).message);
+    }
+  };
+
+  const removeItem = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3600/carts/cart_delete/productId=${id}`, {
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
+      });
+      // if (!response.ok) throw new Error('Failed to remove item');
+      await fetchCart();
+    } catch (err) {
+      setError((err as Error).message);
     }
   };
 
   const clearCart = async () => {
-    if (!user) return;
     try {
-      const idToken = await user.getIdToken();
-      const response = await fetch("http://localhost:3600/cart/clear", {
-        method: "POST",
+      const response = await fetch('http://localhost:3600/carts/delete_all', {
+        method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
       });
-      if (!response.ok) {
-        throw new Error("Failed to clear cart");
-      }
-      setCart([]);
-    } catch (error) {
-      console.error("Error clearing cart:", error);
+      
+      if (!response.ok) throw new Error('Failed to clear cart');
+      await fetchCart();
+    } catch (err) {
+      setError((err as Error).message);
     }
   };
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      getCart();
-    }
-  }, [authLoading, user, getCart]);
-
   return (
-    <CartContext.Provider value={{ cart, loading, getCart, updateItem, deleteItem, clearCart }}>
-      {!loading && children}
+    <CartContext.Provider
+      value={{
+        cart,
+        isLoading,
+        error,
+        fetchCart,
+        addItem,
+        increaseItem,
+        decreaseItem,
+        removeItem,
+        clearCart,
+        isAuthenticated,
+        setAuthStatus: setIsAuthenticated,
+      }}
+    >
+      {children}
     </CartContext.Provider>
   );
+};
+
+export const useCart = (): CartContextType => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 };
