@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:IfeAndShade419@localhost:4190/postgres?schema=public"
+  url      = "https://zorra-lxsj.onrender.com"
 }
 
 generator client {
