@@ -37,17 +37,35 @@ const Category: React.FC = () => {
       if (loading) return <p>Loading all categories ...</p>;
       if (error) return <p className="text-red-500">{error}</p>;
   return (
-    <div className="category-page w-80 text-left p-4 bg-gray-200">
-      <h1 className="text-xl font-bold">Products in Category Section</h1>
-      <div className="product-list text-left">
-        {categories.map((output, index) => (
-          <Link to={`/category/${output.category}`} key={index} className="category-item space-y-3 px-3 underline">
-            <h2>{output.category}</h2>
-          </Link>
-        ))}
-      </div>
-      <Link to="/" className="text-blue-600 underline">Back to Home</Link>
-    </div>
+    <div className="category-page w-full max-w-lg p-6 bg-gray-100 rounded-lg shadow-xl h-screen overflow-y-auto">
+  <h1 className="text-3xl font-extrabold text-gray-900 mb-8">
+    Categories
+  </h1>
+
+  <div className="product-list divide-y divide-gray-300">
+    {categories.map((output, index) => (
+      <Link 
+        to={`/category/${output.category}`} 
+        key={index} 
+        className="block py-4 hover:bg-gray-200 rounded-md transition duration-300"
+      >
+        <h2 className="text-xl font-medium text-gray-800 hover:text-blue-600 pl-2">
+          {output.category}
+        </h2>
+      </Link>
+    ))}
+  </div>
+
+  <div className="mt-10">
+    <Link 
+      to="/" 
+      className="inline-block text-lg text-blue-600 hover:text-blue-800 underline"
+    >
+      &larr; Back to Home
+    </Link>
+  </div>
+</div>
+
   )
 }
 

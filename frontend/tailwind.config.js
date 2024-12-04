@@ -10,6 +10,8 @@ export default {
     "./src/components/ProductCategory.tsx",
 
     "./src/components/CartItems.tsx",
+    "./src/components/WishlistPage.tsx",
+
 
 
     "./src/utils/SignInComponent.tsx",

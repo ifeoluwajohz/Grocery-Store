@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+
 import Category from './Category';
 import SearchPattern from './SearchPattern';
 import CartItem from './CartItems'
+import AccountPage from '../utils/AccountPage';
 
 interface Product {
   id: number;
@@ -19,12 +22,13 @@ interface FilterState {
 
 const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
+  const { cart, fetchCart } = useCart();
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [category, setCategory] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [cart, setCart] = useState<boolean>(false);
+  const [carts, setCart] = useState<boolean>(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [showSearchPattern, setShowSearchPattern] = useState<boolean>(false);
 
@@ -88,6 +92,11 @@ const Navbar: React.FC = () => {
     setShowSearchPattern(search.trim().length > 0);
   }, [search]);
 
+  useEffect(() => {
+    fetchCart();
+
+  },[])
+
   const toggleCategory = () => setCategory((prev) => !prev);
 
   const handleLogout = () => {
@@ -138,57 +147,51 @@ const Navbar: React.FC = () => {
             <div className="text-red-500"></div>
           ) : (
             showSearchPattern && (
-              <div className={`absolute top-9 right-1 flex flex-col items-start text-center z-10 bg-gray-100 flex-shrink w-0 md:w-full ${ search ? 'visible' : 'invisible' }`}  >
+              <div className={`absolute top-9 right-1 flex flex-col items-start text-center z-10 bg-gray-100 flex-shrink w-0 md:w-full md:visible invisible ${ search ? 'visible' : 'invisible' }`}  >
                 <SearchPattern products={products} />
               </div>
           ))}
           </div>
         <div className="notifications flex space-x-3 items-center">
-          <img
-            src="https://img.icons8.com/?size=100&id=11642&format=png&color=000000"
-            className="w-5"
-            alt="notifications"
-          />
-          <img
-            className="w-5 cursor-pointer"
-            onClick={() => setCart(!cart)}
-            src="https://img.icons8.com/ios/50/shopping-cart-loaded--v1.png"
-            alt="cart"
-          />
-          <img
-            onClick={() => setIsLoggedIn(!isLoggedIn)}
-            className="w-6 h-6 cursor-pointer"
-            src="https://img.icons8.com/fluency/48/test-account--v1.png"
-            alt="user"
-          />
+          <Link to='/wishlist'>
+            <img
+              src="https://img.icons8.com/?size=100&id=11642&format=png&color=000000"
+              className="w-5"
+              alt="notifications"
+            />
+          </Link>
+          <div>
+          <div className="relative">
+            <img
+              onClick={() => setCart(!carts)}  // Remove this line
+              className="w-5 cursor-pointer"
+              src="https://img.icons8.com/ios/50/shopping-cart-loaded--v1.png"
+              alt="cart"
+            />
+            {cart.length > 0 && (  // Check if cart has items
+              <span className="absolute top-[-10px] right-[-5px] w-3 h-3 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center transform translate-x-1/2 translate-y-1/2">
+              {cart.length} {/* Display number of items */}
+            </span>
+            
+            )}
+          </div>
+          </div>
+          <Link to='/account'>
+            <img
+              onClick={() => setIsLoggedIn(!isLoggedIn)}
+              className="w-6 h-6 cursor-pointer"
+              src="https://img.icons8.com/fluency/48/test-account--v1.png"
+              alt="user"
+            />
+          </Link>
 
-          {cart && (
+          {carts && (
             <div className="fixed text-center mt-3 top-8 right-2 lg:right-32 z-50 bg-slate-200 p-4 w-64 h-screen">
               <CartItem />
             </div>
           )}
 
-          {isLoggedIn && (
-            <div className="fixed mt-2 top-8 right-2 lg:right-32 z-50 bg-slate-200 p-4 w-64 mb-40">
-              {user ? (
-                <>
-                  <Link to="/Settings" className="text-blue-600 text-xs">
-                    Account Info
-                  </Link>
-                  <Link to="/Account_management" className="text-blue-600 text-xs">
-                    Manage Account
-                  </Link>
-                  <p onClick={handleLogout} className="text-red-600 text-xs cursor-pointer">
-                    Logout
-                  </p>
-                </>
-              ) : (
-                <Link to="/Login" className="block text-blue-600 text-xs">
-                  Login
-                </Link>
-              )}
-            </div>
-          )}
+          
         </div>
       </div>
       

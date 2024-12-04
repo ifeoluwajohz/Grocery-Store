@@ -94,7 +94,7 @@ const addProduct = async (req, res, next) => {
             product: newProduct,
         });
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
         res.send(error)
     }
 };
@@ -243,6 +243,8 @@ const getCategory = async (req, res) => {
     });
 
     if (products.length === 0) {
+      console.log({ message: 'No products found for this category' });
+
       return res.status(404).json({ message: 'No products found for this category' });
     }
 

@@ -68,18 +68,29 @@ const Home = () => {
         <h1 className="text-2xl"><span className='underline'>Top</span> Saver Today</h1>
         {loading && <p>Loading ...</p>}
         {error &&  <p className="text-red-300">{error}</p>}
-        <div className=" flex space-x-8 py-4 flex-wrap text-left items-start justify-start mt-5">
-          {products.map((product) => (
-            <Link to={`product/${product.id}`} key={product.id} className='flex '>
-              <div>
-                <button className='bg-green-500 text-xs px-3 py-1 text-white'>50% off</button>
-                <p>{product.name}</p>
-                <p className='text-sm text-black font-semibold mt-2'>$ <span className='text-sm text-green-400 font-bold'>{product.price}</span></p>
-              </div>
-              <img src={product.image} alt="Fresh veggies" className="relative" />
-            </Link>
-          ))}
-        </div>
+        <div className="flex flex-col md:flex-row md:flex-wrap gap-8 py-4 text-left items-start justify-start mt-5">
+  {products.map((product) => (
+    <Link 
+      to={`product/${product.id}`} 
+      key={product.id} 
+      className="flex flex-col md:flex-row items-center gap-4 w-full md:w-[48%] lg:w-[32%] bg-white p-4 rounded shadow-md"
+    >
+      <img 
+        src={product.image} 
+        alt="Fresh veggies" 
+        className="w-24 h-24 object-contain"
+      />
+      <div className="flex flex-col items-start">
+        <button className="bg-green-500 text-xs px-3 py-1 text-white rounded">50% off</button>
+        <p className="text-sm mt-2 line-clamp-1">{product.name}</p>
+        <p className="text-lg text-black font-semibold mt-2">
+        ₦ <span className="text-lg text-green-400 font-bold">{product.price}</span>
+        </p>
+      </div>
+    </Link>
+  ))}
+</div>
+
       </div> 
       <div className=" lg:text-black text-white flyer my-10 relative group">
         <img className='h-64 w-full object-none -z-10'  src='https://images.unsplash.com/photo-1685504513848-df0dd6893cec?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' />

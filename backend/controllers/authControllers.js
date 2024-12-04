@@ -54,6 +54,7 @@ const registerUser = async (req, res, next) => {
         });
 
         res.status(201).json({ message: "User authenticated successfully", user });
+
     } catch (error) {
         console.error("Error verifying ID token:", error.message);
         res.status(400).json({ error: "Invalid token" });
@@ -93,6 +94,8 @@ const loginUser = async (req, res) => {
             user,
             token, // Send token in response
         });
+        console.log(idToken);
+
     } catch (error) {
         console.error("Error verifying ID token:", error.message);
         res.status(400).json({ error: "Invalid token" });

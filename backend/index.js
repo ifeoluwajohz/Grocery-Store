@@ -4,6 +4,7 @@ const express = require('express');
 const authRoutes = require('./routes/authRoute'); // Correct path to your authRoute.js file
 const cartRoute = require('./routes/cartRoute')
 const productRoutes = require('./routes/productRoute');
+const wishlist = require('./routes/wishlistRoute')
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const app = express();
@@ -26,6 +27,7 @@ app.use(express.json());
 
 // Use the auth routes
 app.use('/user', authRoutes); // Use the routes exported from authRoute.js
+app.use('/wishlist', wishlist);
 app.use('/carts', cartRoute)
 app.use('/products', productRoutes);
 
