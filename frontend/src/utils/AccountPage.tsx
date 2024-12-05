@@ -3,20 +3,9 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'
 
 
-interface User {
-  username: string;
-  email: string;
-  // Add other fields as necessary
-}
 
-interface Props {
-  isLoggedIn: boolean;
-  user: User | null;
-  handleLogout: () => void;
-}
-
-const AccountPage: React.FC<Props> = ({ handleLogout }) => {
-  const {user, fetchUserProfile} = useAuth();
+const AccountPage: React.FC = () => {
+  const {user, fetchUserProfile, signOut} = useAuth();
 
   return (
     <div className=" bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
@@ -25,7 +14,7 @@ const AccountPage: React.FC<Props> = ({ handleLogout }) => {
           <h1 className="text-3xl font-bold text-gray-800">Account Settings</h1>
           {user && (
             <button
-              onClick={handleLogout}
+              onClick={signOut}
               className="text-red-600 font-semibold hover:bg-red-700 px-4 py-2 rounded transition duration-300"
             >
               Logout
@@ -37,14 +26,16 @@ const AccountPage: React.FC<Props> = ({ handleLogout }) => {
           {user ? (
             <div className="space-y-4">
               <div className="text-gray-800 text-xl">
-                <p>Welcome, <span className="font-bold">{user?.username}</span>!</p>
+                {/* <p>Welcome, <span className="font-bold">{user?.username}</span>!</p> */}
                 <p className="text-sm text-gray-600">Email: <span className="text-gray-800">{user?.email}</span></p>
               </div>
 
               <div className="space-y-4">
                 <Link
                   to="/Settings"
-                  className="block text-xl text-blue-600 hover:text-blue-800 transition duration-300"
+                  className="block text-xl text-blue-600 hover:text-blue-800 transition duration-300 "
+                  onClick={() => fetchUserProfile()}
+
                 >
                   Account Info
                 </Link>

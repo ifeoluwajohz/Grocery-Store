@@ -1,10 +1,10 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 
 interface Product {
   id: string;
   name: string;
-  price: string; // Consider using `number` for price
+  price: string | string ; // Consider using `number` for price
   category: string;
   image: string;
 }
@@ -16,19 +16,17 @@ interface CartItem {
   product: Product; // Include full product details
 }
 
-interface increase {
-  quantity: number;
-  productId: string; // Related to Product
-
+interface addProduct {
+  quantity : number;
+  productId : string;
 }
-
 
 interface CartContextType {
   cart: CartItem[];
   isLoading: boolean;
   error: string | null;
   fetchCart: () => Promise<void>;
-  addItem: (item: CartItem) => Promise<void>;
+  addItem: (item: addProduct) => Promise<void>;
   increaseItem: (id: string) => Promise<void>;
   decreaseItem: (id: string) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
@@ -56,6 +54,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json'
+
         },
       });
       if (!response.ok) throw new Error('Failed to fetch cart');
@@ -72,7 +72,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
   
 
-  const addItem = async (item: CartItem) => {
+  const addItem = async (item: addProduct) => {
 
     const token = localStorage.getItem("jwt");
     try {
@@ -85,6 +85,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         body: JSON.stringify(item),
         
       });
+      console.log(response)
       await fetchCart(); // Refresh cart
     } catch (error) {
       console.log(error)
@@ -92,7 +93,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const increaseItem = async (id: number) => {
+  const increaseItem = async (id: string) => {
     const token = localStorage.getItem("jwt");
     try {
       const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/increase`, {
@@ -103,13 +104,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       },
         
       });
+      console.log(response)
       await fetchCart(); // Refresh cart
     } catch (error) {
       setError((error as Error).message);
     }
   };
 
-  const decreaseItem = async (id: number) => {
+  const decreaseItem = async (id: string) => {
     const token = localStorage.getItem("jwt");
     try {
       const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/decrease`, {
@@ -120,13 +122,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       },
         
       });
+      console.log(response)
       await fetchCart(); // Refresh cart
     } catch (error) {
       setError((error as Error).message);
     }
   };
 
-  const removeItem = async (id: number) => {
+  const removeItem = async (id: string) => {
     try {
       const response = await fetch(`http://localhost:3600/carts/cart_delete/productId=${id}`, {
         method: 'DELETE',
@@ -135,6 +138,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           'Content-Type': 'application/json'
       },
       });
+      console.log(response)
       // if (!response.ok) throw new Error('Failed to remove item');
       await fetchCart();
     } catch (err) {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode } from 'react';
 import { Product } from '../types/WishList'; // Define your product type here
 
 // Define types for context state and actions
@@ -29,32 +29,34 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
     // Fetch wishlist items from the server
     const getWishlistItems = async () => {
         try {
-            setLoading(true);
-            setError(null); // Reset previous errors
-            const response = await fetch('http://localhost:3600/wishlist/get_wishlist', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch wishlist: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            if (data?.wishlist) {
-                setWishlist(data.wishlist);
-            } else {
-                throw new Error('Invalid response structure');
-            }
+          setLoading(true);
+          setError(null); // Reset previous errors
+          const response = await fetch('http://localhost:3600/wishlist/get_wishlist', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Failed to fetch wishlist: ${response.statusText}`);
+          }
+      
+          const data = await response.json();
+          console.log("Fetched Wishlist:", data);  // Log the entire response
+          if (data?.wishlist) {
+            setWishlist(data.wishlist);
+          } else {
+            throw new Error('Invalid response structure');
+          }
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+          setError(error instanceof Error ? error.message : 'An unexpected error occurred');
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+      
 
     // Add item to wishlist
     const addItemToWishlist = async (productId: string) => {

@@ -5,6 +5,8 @@ import { useParams, Link } from 'react-router-dom'
 interface ProductCategories {
     id: number;
     name: string;
+    image: string;
+    description :string;
     category: string;
     price: number;
 }
@@ -13,7 +15,7 @@ const ProductCategory: React.FC = () => {
     const {category } = useParams();
     const [categories, setCategories] = useState<ProductCategories[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState<string>('')
 
 
     useEffect(() => {
@@ -26,11 +28,10 @@ const ProductCategory: React.FC = () => {
             }
             const data = await response.json();
             setCategories(data.products);
-            console.log(data.products);
 
           } catch (err) {
-            setError(err.message);
-            console.log(err.message);
+            setError((err as Error).message);
+            console.log((err as Error).message);
 
           } finally {
             setLoading(false);

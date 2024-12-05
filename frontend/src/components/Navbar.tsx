@@ -6,10 +6,10 @@ import { useCart } from "../context/CartContext";
 import Category from './Category';
 import SearchPattern from './SearchPattern';
 import CartItem from './CartItems'
-import AccountPage from '../utils/AccountPage';
+
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   category: string;
   price: number;
@@ -21,7 +21,7 @@ interface FilterState {
 }
 
 const Navbar: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { cart, fetchCart } = useCart();
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -98,11 +98,6 @@ const Navbar: React.FC = () => {
   },[])
 
   const toggleCategory = () => setCategory((prev) => !prev);
-
-  const handleLogout = () => {
-    signOut();
-    setIsLoggedIn(false);
-  };
 
   return (
     <>
@@ -187,7 +182,9 @@ const Navbar: React.FC = () => {
 
           {carts && (
             <div className="fixed text-center mt-3 top-8 right-2 lg:right-32 z-50 bg-slate-200 p-4 w-64 h-screen">
-              <CartItem />
+              {
+                user ? <CartItem /> : <Link to='/login'></Link>
+              }
             </div>
           )}
 

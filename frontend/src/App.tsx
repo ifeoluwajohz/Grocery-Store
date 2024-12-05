@@ -1,9 +1,8 @@
-import React from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 import { useAuth } from './context/AuthContext'
 
-
+import MenuBar from "./components/MenuBar"
 import Navbar from "./components/Navbar"
 import Home from './components/Home'
 import WishlistPage from './components/WishlistPage'
@@ -17,6 +16,7 @@ const App = () => {
   return (
     <>
       <Router>
+        <MenuBar />
         <Navbar />
         <Routes>
           <Route path='/login' element={!user ? <SignInComponent /> : <Home/>} />

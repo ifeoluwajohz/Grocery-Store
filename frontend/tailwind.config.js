@@ -3,6 +3,7 @@ export default {
   content: [
     "./src/App.tsx",
     "./src/components/Home.tsx",
+    "./src/components/MenuBar.tsx",
     "./src/components/Navbar.tsx",
     "./src/components/Category.tsx",
     "./src/components/SearchPattern.tsx",

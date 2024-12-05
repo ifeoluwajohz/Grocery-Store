@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 
 interface ProductCategories {
@@ -9,7 +9,7 @@ interface ProductCategories {
 const Category: React.FC = () => {
     const [categories, setCategories] = useState<ProductCategories[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState<string>('')
 
 
     useEffect(() => {
@@ -25,7 +25,9 @@ const Category: React.FC = () => {
             // con(data.categories);
 
           } catch (err) {
+            if(err instanceof Error){
             setError(err.message);
+            }
           } finally {
             setLoading(false);
           }

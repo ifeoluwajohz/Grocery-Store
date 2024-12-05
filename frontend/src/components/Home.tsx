@@ -28,7 +28,7 @@ interface Produce {
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string>('')
   const [products, setProducts] = useState<Produce[]>([])
   const featuring: Features[] = features.features;
 
@@ -40,8 +40,11 @@ const Home = () => {
         const response = await fetch(`http://localhost:3600/products/category/CLOTHING`);
         const data = await response.json()
         setProducts(data.products)
-      }catch(err){
-        setError(err.message)
+      }catch(error){
+        if (error instanceof Error){
+        setError(error.message)
+
+        }
       }finally{
         setLoading(false)
       }

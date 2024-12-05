@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { auth } from "../config/firebaseConfig"; // Ensure this is set up correctly
+import { auth } from "../config/firebaseConfig";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 
 const SignInComponent: React.FC = () => {
-  const { user, loading, signOut, signInWithGoogle, registerWithEmail, signInWithEmail } = useAuth();
+  const { user, loading, signOut, signInWithGoogle, signUp, signIn } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
@@ -15,7 +15,10 @@ const SignInComponent: React.FC = () => {
 
     const initFirebaseUI = () => {
       const uiConfig = {
-        signInOptions: ["google.com", "password"],
+        signInOptions: [
+          "google.com", // Google sign-in
+          "password",   // Email/Password sign-in
+        ],
         callbacks: {
           signInSuccessWithAuthResult: () => false, // Prevent page reload
         },
@@ -43,13 +46,15 @@ const SignInComponent: React.FC = () => {
   const handleEmailAuth = async () => {
     try {
       if (isSignUp) {
-        await registerWithEmail(email, password);
+        await signUp(email, password);
       } else {
-        await signInWithEmail(email, password);
+        await signIn(email, password);
       }
     } catch (error) {
-      console.error("Authentication error:", error);
-      alert(error.message || "Authentication failed");
+      if (error instanceof Error) {
+        console.error("Authentication error:", error);
+        alert(error.message || "Authentication failed");
+      }
     }
   };
 
@@ -60,7 +65,9 @@ const SignInComponent: React.FC = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         {user ? (
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-800">Welcome, {user.displayName || user.email}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Welcome, {user.displayName || user.email}
+            </h2>
             <p className="mt-2 text-gray-600">How is your day going?</p>
             <button
               onClick={signOut}
@@ -71,7 +78,9 @@ const SignInComponent: React.FC = () => {
           </div>
         ) : (
           <div>
-            <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isSignUp ? "Sign Up" : "Sign In"}</h1>
+            <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+              {isSignUp ? "Sign Up" : "Sign In"}
+            </h1>
             <div className="space-y-4">
               <input
                 type="email"

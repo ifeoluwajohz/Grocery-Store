@@ -2,6 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
+// Define interfaces for your cart item and product
+interface Product {
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartItem {
+  productId: string;
+  product: Product;
+  quantity: number;
+}
+
 const CartItems: React.FC = () => {
   const {
     cart,
@@ -14,8 +27,8 @@ const CartItems: React.FC = () => {
     clearCart,
   } = useCart();
 
-  const [mergedCart, setMergedCart] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [mergedCart, setMergedCart] = useState<CartItem[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
     fetchCart();
@@ -23,15 +36,26 @@ const CartItems: React.FC = () => {
 
   useEffect(() => {
     if (cart.length > 0) {
-      const merged = mergeCartItems(cart);
+      // Normalize cart data before passing to mergeCartItems
+      const normalizedCart = cart.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          price: Number(item.product.price), // Ensure price is a number
+        },
+      }));
+  
+      const merged = mergeCartItems(normalizedCart);
       setMergedCart(merged.reverse()); // Recently added items first
       calculateTotalPrice(merged);
     }
   }, [cart]);
+  
 
-  const mergeCartItems = (cartItems) => {
-    return cartItems.reduce((acc, item) => {
-      const existingItem = acc.find((i) => i.productId === item.productId);
+  // Properly typed function
+  const mergeCartItems = (cartItems: CartItem[]): CartItem[] => {
+    return cartItems.reduce((acc: CartItem[], item: CartItem) => {
+      const existingItem = acc.find((i: CartItem) => i.productId === item.productId);
 
       if (existingItem) {
         existingItem.quantity += item.quantity;
@@ -43,8 +67,11 @@ const CartItems: React.FC = () => {
     }, []);
   };
 
-  const calculateTotalPrice = (mergedItems) => {
-    const total = mergedItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const calculateTotalPrice = (mergedItems: CartItem[]) => {
+    const total = mergedItems.reduce(
+      (sum: number, item: CartItem) => sum + item.product.price * item.quantity,
+      0
+    );
     setTotalPrice(total);
   };
 
@@ -65,7 +92,7 @@ const CartItems: React.FC = () => {
           className="mt-6 space-y-2 overflow-y-scroll"
           style={{ maxHeight: '400px' }} // Set max height for scroll
         >
-          {mergedCart.map((item) => (
+          {cart.map((item) => (
             <Link
               key={item.productId}
               to={`product/${item.productId}`}
