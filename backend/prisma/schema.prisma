@@ -1,14 +1,62 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// Define ProductCategory Enum
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  name           String
+  firebaseId     String         @unique
+  email          String?        @unique
+  profilePicture String?
+  cart           CartItem[]
+  likes          Like[]
+  wishlist       WishlistItem[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  productId Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model WishlistItem {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id            Int             @id @default(autoincrement())
+  name          String
+  price         Decimal
+  description   String?
+  image         String?
+  category      ProductCategory
+  cartItems     CartItem[]
+  likes         Like[]
+  wishlistItems WishlistItem[]
+}
+
 enum ProductCategory {
   ELECTRONICS
   GROCERIES
@@ -20,60 +68,4 @@ enum ProductCategory {
   JEWELRY
   OFFICE_SUPPLIES
   PET_SUPPLIES
-}
-
-// User Model
-model User {   @unique
-  id             Int      @id @default(autoincrement())
-  firebaseId     String   @unique
-  name           String
-  email          String?  @unique
-  profilePicture String?
-
-  cart       CartItem[]
-  wishlist   WishlistItem[]
-  likes      Like[]
-} 
-
-// Cart Item Model
-model CartItem {
-  id         Int           @id @default(autoincrement())
-  quantity   Int
-  product    Product       @relation(fields: [productId], references: [id])
-  productId  Int
-  user       User          @relation(fields: [userId], references: [id])
-  userId     Int
-  createdAt  DateTime      @default(now()) // Automatically sets the current date/time
-  updatedAt  DateTime      @updatedAt      // Automatically updates on every change
-}
-
-// Wishlist Item Model
-model WishlistItem {
-  id         Int           @id @default(autoincrement())
-  product    Product       @relation(fields: [productId], references: [id])
-  productId  Int
-  user       User          @relation(fields: [userId], references: [id])
-  userId     Int
-}
-
-// Like Model
-model Like {
-  id         Int           @id @default(autoincrement())
-  product    Product       @relation(fields: [productId], references: [id])
-  productId  Int
-  user       User          @relation(fields: [userId], references: [id])
-  userId     Int
-}
-
-// Product Model
-model Product {
-  id            Int           @id @default(autoincrement())
-  name          String
-  price         Decimal
-  description   String?
-  image         String?
-  category      ProductCategory
-  cartItems     CartItem[]
-  wishlistItems WishlistItem[]
-  likes         Like[]
 }
