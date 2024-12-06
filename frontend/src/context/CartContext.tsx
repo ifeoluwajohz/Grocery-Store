@@ -50,7 +50,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(true);
     setError(null)
     try {
-      const response = await fetch("http://localhost:3600/carts/get_cartItems", {
+      const response = await fetch("https://zorra-lxsj.onrender.com/carts/get_cartItems", {
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -76,7 +76,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const token = localStorage.getItem("jwt");
     try {
-      const response = await fetch("http://localhost:3600/carts/cart_post", {
+      const response = await fetch("https://zorra-lxsj.onrender.com/carts/cart_post", {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -96,7 +96,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const increaseItem = async (id: string) => {
     const token = localStorage.getItem("jwt");
     try {
-      const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/increase`, {
+      const response = await fetch(`https://zorra-lxsj.onrender.com/carts/cart/productId=${id}/increase`, {
         method: 'PATCH',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -114,7 +114,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const decreaseItem = async (id: string) => {
     const token = localStorage.getItem("jwt");
     try {
-      const response = await fetch(`http://localhost:3600/carts/cart/productId=${id}/decrease`, {
+      const response = await fetch(`https://zorra-lxsj.onrender.com/carts/cart/productId=${id}/decrease`, {
         method: 'PATCH',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -131,7 +131,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const removeItem = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3600/carts/cart_delete/productId=${id}`, {
+      const response = await fetch(`https://zorra-lxsj.onrender.com/carts/cart_delete/productId=${id}`, {
         method: 'DELETE',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -148,7 +148,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearCart = async () => {
     try {
-      const response = await fetch('http://localhost:3600/carts/delete_all', {
+      const response = await fetch('https://zorra-lxsj.onrender.com/carts/delete_all', {
         method: 'DELETE',
         headers: {
           "Authorization": `Bearer ${token}`,

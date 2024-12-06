@@ -37,7 +37,7 @@ const Home = () => {
     const fetchCategory = async () => {
       setLoading(true)
       try{
-        const response = await fetch(`http://localhost:3600/products/category/CLOTHING`);
+        const response = await fetch(`https://zorra-lxsj.onrender.com/products/category/CLOTHING`);
         const data = await response.json()
         setProducts(data.products)
       }catch(error){

@@ -50,7 +50,7 @@ const ProductDetail: React.FC = () => {
           throw new Error('Invalid product ID');
         }
 
-        const response = await fetch(`http://localhost:3600/products/product/${id}`);
+        const response = await fetch(`https://zorra-lxsj.onrender.com/products/product/${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch product details');
         }

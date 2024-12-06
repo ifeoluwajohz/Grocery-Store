@@ -31,7 +31,7 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
         try {
           setLoading(true);
           setError(null); // Reset previous errors
-          const response = await fetch('http://localhost:3600/wishlist/get_wishlist', {
+          const response = await fetch('https://zorra-lxsj.onrender.com/wishlist/get_wishlist', {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch('http://localhost:3600/wishlist/post_wishlist', {
+            const response = await fetch('https://zorra-lxsj.onrender.com/wishlist/post_wishlist', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch(`http://localhost:3600/wishlist/delete_wishlist?productId=${productId}`, {
+            const response = await fetch(`https://zorra-lxsj.onrender.com/wishlist/delete_wishlist?productId=${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch('http://localhost:3600/wishlist/clear_wishlist', {
+            const response = await fetch('https://zorra-lxsj.onrender.com/wishlist/clear_wishlist', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

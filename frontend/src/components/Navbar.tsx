@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
           }
         });
 
-        const response = await fetch(`http://localhost:3600/products/search?${queryParams.toString()}`);
+        const response = await fetch(`https://zorra-lxsj.onrender.com/products/search?${queryParams.toString()}`);
         if (!response.ok) {
           throw new Error('product does not exist');
         }

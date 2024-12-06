@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const idToken = await getIdToken(userCredential.user);
-      await sendAuthRequestToBackend("http://localhost:3600/user/register", idToken);
+      await sendAuthRequestToBackend("https://zorra-lxsj.onrender.com/user/register", idToken);
     } catch (error) {
       console.error("Error during signup:", error);
     }
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await getIdToken(userCredential.user);
-      await sendAuthRequestToBackend("http://localhost:3600/user/login", idToken);
+      await sendAuthRequestToBackend("https://zorra-lxsj.onrender.com/user/login", idToken);
     } catch (error) {
       console.error("Error during sign-in:", error);
     }
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
       const idToken = await getIdToken(userCredential.user);
-      await sendAuthRequestToBackend("http://localhost:3600/user/login", idToken);
+      await sendAuthRequestToBackend("https://zorra-lxsj.onrender.com/user/login", idToken);
     } catch (err) {
       if (err instanceof Error) {
         console.log(err.message);
@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserProfile = async (): Promise<void> => {
     try {
       const token = localStorage.getItem("jwt");
-      const response = await fetch("http://localhost:3600/user/profile", {
+      const response = await fetch("https://zorra-lxsj.onrender.com/user/profile", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

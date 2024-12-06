@@ -11,11 +11,7 @@ const app = express();
 
 
 // Allow requests from your frontend
-app.use(cors({
-  origin: 'http://localhost:5173', // Your frontend URL
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // If using cookies/auth headers
-}));
+app.use(cors())
 
 
 const prisma = new PrismaClient();

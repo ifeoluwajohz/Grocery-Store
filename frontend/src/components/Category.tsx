@@ -16,7 +16,7 @@ const Category: React.FC = () => {
         const fetchProductsByCategory = async () => {
           setLoading(true);
           try {
-            const response = await fetch(`http://localhost:3600/products/categories/`);
+            const response = await fetch(`https://zorra-lxsj.onrender.com/products/categories/`);
             if (!response.ok) {
               throw new Error('Failed to fetch products');
             }
