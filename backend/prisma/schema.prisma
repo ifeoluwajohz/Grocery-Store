@@ -1,10 +1,7 @@
 datasource db {
   provider = "postgresql"
-<<<<<<< HEAD
   url      = env("DATABASE_URL")
-=======
-  url      = "https://zorra-lxsj.onrender.com"
->>>>>>> 5590acd5e0cf7fc86e0d22f1ae74e198ddb7d8c6
+
 }
 
 generator client {
