@@ -1,23 +1,44 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, NavLink, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-import Navbar from './components/Navbar'
+import { useAuth } from './context/AuthContext'
 
-const App: React.FC = () => {
+import MenuBar from "./components/MenuBar"
+import Navbar from "./components/Navbar"
+import Home from './components/Home'
+import WishlistPage from './components/WishlistPage'
+import ProductDetail from './components/ProductDetail'
+import ProductCategory from './components/ProductCategory'
+import SignInComponent from './utils/SignInComponent'
+import AccountPage from './utils/AccountPage'
+
+const App = () => {
+  const {user} = useAuth();
   return (
     <>
-    <Router>
-      <Navbar />
-      <Routes>
-        
-      </Routes>
+      <Router>
+        <MenuBar />
+        <Navbar />
+        <Routes>
+          <Route path='/login' element={!user ? <SignInComponent /> : <Home/>} />
+          <Route path='/account' element={ <AccountPage /> } />
 
-    </Router>
-      <div>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis culpa quaerat neque consectetur quos veniam aperiam unde, ipsam quo obcaecati. Ut quod, earum magnam asperiores id est dolorum praesentium ex!</p>
-      </div>
+        </Routes>
+
+          <Routes>
+            <Route path='/wishlist' element={!user ? <SignInComponent /> : <WishlistPage/>} />
+          </Routes>
+
+        <Routes>
+          <Route path='/' element={<Home />}/>
+        </Routes>
+        <Routes>
+          <Route path='/product/:id' element={<ProductDetail />} />
+          <Route path='/category/:category' element={<ProductCategory />} />
+
+        </Routes>
+      </Router>
+      {/* <SearchBar /> */}
     </>
-    
   )
 }
 

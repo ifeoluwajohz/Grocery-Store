@@ -2,8 +2,23 @@
 export default {
   content: [
     "./src/App.tsx",
+    "./src/components/Home.tsx",
+    "./src/components/MenuBar.tsx",
     "./src/components/Navbar.tsx",
-    // "./src/App.tsx",
+    "./src/components/Category.tsx",
+    "./src/components/SearchPattern.tsx",
+    "./src/components/ProductDetail.tsx",
+    "./src/components/ProductCategory.tsx",
+
+    "./src/components/CartItems.tsx",
+    "./src/components/WishlistPage.tsx",
+
+
+
+    "./src/utils/SignInComponent.tsx",
+
+
+
     // "./src/App.tsx",
 
 
