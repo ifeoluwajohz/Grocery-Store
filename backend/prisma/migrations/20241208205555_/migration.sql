@@ -1,17 +1,13 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "Post";
+-- CreateEnum
+CREATE TYPE "ProductCategory" AS ENUM ('ELECTRONICS', 'GROCERIES', 'CLOTHING', 'BEAUTY', 'BOOKS', 'TOYS', 'SPORTS', 'JEWELRY', 'OFFICE_SUPPLIES', 'PET_SUPPLIES');
 
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "firebaseId" TEXT NOT NULL,
+    "email" TEXT,
+    "profilePicture" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -22,6 +18,8 @@ CREATE TABLE "CartItem" (
     "quantity" INTEGER NOT NULL,
     "productId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
 );
@@ -51,12 +49,16 @@ CREATE TABLE "Product" (
     "price" DECIMAL(65,30) NOT NULL,
     "description" TEXT,
     "image" TEXT,
+    "category" "ProductCategory" NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_firebaseId_key" ON "User"("firebaseId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
