@@ -109,7 +109,7 @@ const ProductDetail: React.FC = () => {
         </p>
         
         <p className="text-2xl font-bold text-green-500">
-          ₦{product.price.toLocaleString()}
+          ${product.price.toLocaleString()}
         </p>
         
         <img 
